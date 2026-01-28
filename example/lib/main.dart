@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_clean_calendar/event_dto.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -17,33 +18,33 @@ class _CalendarScreenState extends State<CalendarScreen> {
     print(_selectedEvents);
   }
 
-  List _selectedEvents;
-  DateTime _selectedDay;
+  List? _selectedEvents;
+  DateTime? _selectedDay;
 
-  final Map _events = {
+final Map<DateTime, List<EventDto>> _events = {
     DateTime(2019, 3, 1): [
-      {'name': 'Event A', 'isDone': true},
+      EventDto() ..name = 'Event A' .. isDone = true,
     ],
     DateTime(2019, 3, 4): [
-      {'name': 'Event A', 'isDone': true},
-      {'name': 'Event B', 'isDone': true},
+      EventDto()..name = 'Event A'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
     ],
     DateTime(2019, 3, 5): [
-      {'name': 'Event A', 'isDone': true},
-      {'name': 'Event B', 'isDone': true},
+      EventDto()..name = 'Event A'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
     ],
     DateTime(2019, 3, 13): [
-      {'name': 'Event A', 'isDone': true},
-      {'name': 'Event B', 'isDone': true},
-      {'name': 'Event C', 'isDone': false},
+      EventDto()..name = 'Event A'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event C'..isDone = false,
     ],
     DateTime(2019, 3, 15): [
-      {'name': 'Event A', 'isDone': true},
-      {'name': 'Event B', 'isDone': true},
-      {'name': 'Event C', 'isDone': false},
+      EventDto()..name = 'Event A'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event C'..isDone = false,
     ],
     DateTime(2019, 3, 26): [
-      {'name': 'Event A', 'isDone': false},
+      EventDto()..name = 'Event A'..isDone = false,
     ],
   };
 
@@ -71,7 +72,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       print("Range is ${range.from}, ${range.to}"),
                   onDateSelected: (date) => _handleNewDate(date),
                   isExpandable: true,
-                  showTodayIcon: true,
+                  showTodayIcon: false,
                   eventDoneColor: Colors.green,
                   eventColor: Colors.grey),
             ),
@@ -94,12 +95,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
               child: ListTile(
-                title: Text(_selectedEvents[index]['name'].toString()),
+                title: Text(_selectedEvents![index]['name'].toString()),
                 onTap: () {},
               ),
             ),
-        itemCount: _selectedEvents.length,
+        itemCount: _selectedEvents!.length,
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(home: Scaffold(body: CalendarScreen())));
 }

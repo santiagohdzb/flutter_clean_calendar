@@ -1,3 +1,4 @@
 class EventDto {
-  bool isDone;
+  bool? isDone;
+  String? name;
 }

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:date_utils/date_utils.dart';
+import 'package:date_utils/date_utils.dart' as DateUtils;
 
 import 'event_dto.dart';
 
 class CalendarTile extends StatelessWidget {
-  final VoidCallback onDateSelected;
-  final DateTime date;
-  final String dayOfWeek;
+  final VoidCallback? onDateSelected;
+  final DateTime? date;
+  final String? dayOfWeek;
   final bool isDayOfWeek;
   final bool isSelected;
   final bool inMonth;
-  final List<EventDto> events;
-  final TextStyle dayOfWeekStyles;
-  final TextStyle dateStyles;
-  final Widget child;
-  final Color selectedColor;
-  final Color eventColor;
-  final Color eventDoneColor;
+  final List<EventDto>? events;
+  final TextStyle? dayOfWeekStyles;
+  final TextStyle? dateStyles;
+  final Widget? child;
+  final Color? selectedColor;
+  final Color? eventColor;
+  final Color? eventDoneColor;
 
   CalendarTile({
     this.onDateSelected,
@@ -40,7 +40,7 @@ class CalendarTile extends StatelessWidget {
         child: new Container(
           alignment: Alignment.center,
           child: new Text(
-            dayOfWeek,
+            dayOfWeek ?? "N/A",
             style: dayOfWeekStyles,
           ),
         ),
@@ -63,16 +63,16 @@ class CalendarTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                Utils.formatDay(date).toString(),
+                DateUtils.DateUtils.formatDay(date!).toString(),
                 style: TextStyle(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w400,
                     color: inMonth ? Colors.black : Colors.grey),
               ),
-              events != null && events.length > 0
+              events != null && (events?.length ?? 0) > 0
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: events.map((event) {
+                      children: (events ?? []).map((event) {
                         eventCount++;
                         if (eventCount > 3) return Container();
                         return Container(
@@ -85,7 +85,7 @@ class CalendarTile extends StatelessWidget {
                             color: event.isDone == true
                                 ? eventDoneColor ??
                                     Theme.of(context).primaryColor
-                                : eventColor ?? Theme.of(context).accentColor,
+                                : eventColor ?? Theme.of(context).colorScheme.onTertiary,
                           ),
                         );
                       }).toList())
