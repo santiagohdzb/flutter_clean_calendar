@@ -1,20 +1,16 @@
 plugins {
     id "com.android.application"
-    // Note: We don't add versions here; they are managed in settings.gradle
+    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
 android {
-    // 1. This is the "Namespace" fix. Replace with your actual package name.
     namespace "com.example.example" 
-    
-    // 2. Flutter 3.38+ works best with 34 or 35
-    compileSdk 34
-
+    compileSdk 36
     defaultConfig {
         applicationId "com.example.example"
-        minSdk 24 // Flutter 3.38 minimum recommendation
-        targetSdk 35
+        minSdk = flutter.minSdkVersion
+        targetSdk 36
         versionCode flutter.versionCode
         versionName flutter.versionName
     }
@@ -32,7 +28,6 @@ android {
 }
 
 dependencies {
-    // Modern AndroidX testing libraries
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

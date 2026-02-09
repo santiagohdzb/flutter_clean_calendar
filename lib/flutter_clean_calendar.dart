@@ -30,6 +30,7 @@ class Calendar extends StatefulWidget {
   final Color? eventDoneColor;
   final DateTime? initialDate;
   final bool isExpanded;
+  final bool showTopHeader;
 
   Calendar({
     this.onMonthChanged,
@@ -45,6 +46,7 @@ class Calendar extends StatefulWidget {
     this.eventDoneColor,
     this.initialDate,
     this.isExpanded = false,
+    this.showTopHeader = false
   });
 
   @override
@@ -59,8 +61,6 @@ class _CalendarState extends State<Calendar> {
   bool isExpanded = false;
   String? displayMonth;
   DateTime get selectedDate => _selectedDate;
-
-  
 
   void initState() {
     super.initState();
@@ -80,6 +80,11 @@ class _CalendarState extends State<Calendar> {
     var todayIcon;
     var leftArrow;
     var rightArrow;
+
+    if (widget.showTopHeader == false)
+    {
+      return Container();
+    }
 
     if (widget.showArrows) {
       leftArrow = IconButton(
@@ -138,6 +143,16 @@ class _CalendarState extends State<Calendar> {
           swipeDetectionMoment: SwipeDetectionMoment.onUpdate,
         ),
         child: Column(children: <Widget>[
+          Container(
+            height: 18,
+            padding: const EdgeInsets.only(bottom: 0.0),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.grey.shade300, width: 1)),
+            ),
+            child: Row(
+              children: weekdayBuilder()
+            ),
+          ),
           GridView.count(
             primary: false,
             shrinkWrap: true,
@@ -150,25 +165,41 @@ class _CalendarState extends State<Calendar> {
     );
   }
 
+  List<Widget> weekdayBuilder() {
+    return DateUtils.DateUtils.weekdays.map((day) => Expanded(
+      child: Center(
+        child: Text(
+          day, 
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+            color: Colors.black87,
+          ),
+        ),
+      ),
+    ))
+    .toList();
+  }
+
   List<Widget> calendarBuilder() {
     List<Widget> dayWidgets = [];
     List<DateTime>? calendarDays =
         isExpanded ? selectedMonthsDays : selectedWeeksDays?.toList();
 
-    DateUtils.DateUtils.weekdays.forEach(
-      (day) {
-        dayWidgets.add(
-          CalendarTile(
-            selectedColor: widget.selectedColor,
-            eventColor: widget.eventColor,
-            eventDoneColor: widget.eventDoneColor,
-            events: widget.events![day],
-            isDayOfWeek: true,
-            dayOfWeek: day,
-          ),
-        );
-      },
-    );
+    // DateUtils.DateUtils.weekdays.forEach(
+    //   (day) {
+    //     dayWidgets.add(
+    //       CalendarTile(
+    //         selectedColor: widget.selectedColor,
+    //         eventColor: widget.eventColor,
+    //         eventDoneColor: widget.eventDoneColor,
+    //         events: widget.events![day],
+    //         isDayOfWeek: true,
+    //         dayOfWeek: day,
+    //       ),
+    //     );
+    //   },
+    // );
 
     bool monthStarted = false;
     bool monthEnded = false;
