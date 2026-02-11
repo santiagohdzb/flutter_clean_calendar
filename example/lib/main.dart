@@ -18,32 +18,83 @@ class _CalendarScreenState extends State<CalendarScreen> {
     print(_selectedEvents);
   }
 
-  List? _selectedEvents;
+  List<EventDto> _selectedEvents = [];
   DateTime? _selectedDay;
 
 final Map<DateTime, List<EventDto>> _events = {
-    DateTime(2019, 3, 1): [
+    DateTime(2026, 2, 1): [
       EventDto() ..name = 'Event A' .. isDone = true,
     ],
-    DateTime(2019, 3, 4): [
+    DateTime(2026, 2, 4): [
       EventDto()..name = 'Event A'..isDone = true,
       EventDto()..name = 'Event B'..isDone = true,
     ],
-    DateTime(2019, 3, 5): [
+    DateTime(2026, 2, 5): [
       EventDto()..name = 'Event A'..isDone = true,
       EventDto()..name = 'Event B'..isDone = true,
     ],
-    DateTime(2019, 3, 13): [
+    DateTime(2026, 2, 10): [
+      EventDto()..name = 'Event A'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+    ],
+    DateTime(2026, 2, 13): [
+      EventDto()..name = 'Event A'..isDone = true,
+      EventDto()..name = 'Event C'..isDone = false,
+      EventDto()..name = 'Event E'..isDone = false,
+      EventDto()..name = 'Event F'..isDone = false,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+      EventDto()..name = 'Event G'..isDone = false,
+    ],
+    DateTime(2026, 2, 15): [
       EventDto()..name = 'Event A'..isDone = true,
       EventDto()..name = 'Event B'..isDone = true,
       EventDto()..name = 'Event C'..isDone = false,
-    ],
-    DateTime(2019, 3, 15): [
-      EventDto()..name = 'Event A'..isDone = true,
-      EventDto()..name = 'Event B'..isDone = true,
+      EventDto()..name = 'Event C'..isDone = false,
       EventDto()..name = 'Event C'..isDone = false,
     ],
-    DateTime(2019, 3, 26): [
+    DateTime(2026, 2, 26): [
       EventDto()..name = 'Event A'..isDone = false,
     ],
   };
@@ -57,10 +108,10 @@ final Map<DateTime, List<EventDto>> _events = {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Theme.of(context).primaryColor,
-      //   title: Text('Calendario'),
-      // ),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text('Calendar'),
+      ),
       body: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -71,10 +122,20 @@ final Map<DateTime, List<EventDto>> _events = {
                   onRangeSelected: (range) =>
                       print("Range is ${range.from}, ${range.to}"),
                   onDateSelected: (date) => _handleNewDate(date),
-                  isExpandable: true,
+                  isExpandable: false,
+                  isExpanded: true,
                   showTodayIcon: false,
+                  showTopHeader: true,
                   eventDoneColor: Colors.green,
-                  eventColor: Colors.grey),
+                  eventColor: Colors.grey,
+                  circleShapeSelection: false,
+                  daySubtitleTextBuilder: (context, date) {
+                    var events = _events[date];
+                    var hasEvents = events?.isNotEmpty == true;
+                    var text = hasEvents ? "-9,999,999" : "";
+                    return new DaySubtitleDetail(text, Colors.red);
+                  },
+                ),
             ),
             _buildEventList()
           ],
@@ -95,7 +156,7 @@ final Map<DateTime, List<EventDto>> _events = {
               padding:
                   const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
               child: ListTile(
-                title: Text(_selectedEvents![index]['name'].toString()),
+                title: Text(_selectedEvents![index].name.toString()),
                 onTap: () {},
               ),
             ),

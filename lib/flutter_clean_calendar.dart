@@ -1,14 +1,20 @@
 library flutter_clean_calendar;
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:date_utils/date_utils.dart' as DateUtils;
 import './simple_gesture_detector.dart';
 import './calendar_tile.dart';
 import 'event_dto.dart';
 
-typedef DayBuilder(BuildContext context, DateTime day);
+typedef DayBuilder= Widget Function(BuildContext context, DateTime day);
+typedef DaySubtitleTextBuilder = DaySubtitleDetail Function(BuildContext context, DateTime day);
+
+class DaySubtitleDetail {
+  final String subtitle;
+  final Color? color;
+
+  DaySubtitleDetail(this.subtitle, [this.color]);
+}
 
 class Range {
   final DateTime from;
@@ -31,6 +37,8 @@ class Calendar extends StatefulWidget {
   final DateTime? initialDate;
   final bool isExpanded;
   final bool showTopHeader;
+  final bool circleShapeSelection;
+  final DaySubtitleTextBuilder? daySubtitleTextBuilder;
 
   Calendar({
     this.onMonthChanged,
@@ -46,7 +54,9 @@ class Calendar extends StatefulWidget {
     this.eventDoneColor,
     this.initialDate,
     this.isExpanded = false,
-    this.showTopHeader = false
+    this.showTopHeader = false,
+    this.circleShapeSelection = true,
+    this.daySubtitleTextBuilder
   });
 
   @override
@@ -64,15 +74,19 @@ class _CalendarState extends State<Calendar> {
 
   void initState() {
     super.initState();
-    _selectedDate = widget?.initialDate ?? DateTime.now();
-    isExpanded = widget?.isExpanded ?? false;
+
+    _selectedDate = widget.initialDate ?? DateTime.now();
+    isExpanded = widget.isExpanded;
     selectedMonthsDays = DateUtils.DateUtils.daysInMonth(_selectedDate);
+
     var firstDayOfCurrentWeek = DateUtils.DateUtils.firstDayOfWeek(_selectedDate);
     var lastDayOfCurrentWeek = DateUtils.DateUtils.lastDayOfWeek(_selectedDate);
+
     selectedWeeksDays =
         DateUtils.DateUtils.daysInRange(firstDayOfCurrentWeek, lastDayOfCurrentWeek)
             .toList()
             .sublist(0, 7);
+            
     displayMonth = DateUtils.DateUtils.formatMonth(_selectedDate);
   }
 
@@ -157,6 +171,7 @@ class _CalendarState extends State<Calendar> {
             primary: false,
             shrinkWrap: true,
             crossAxisCount: 7,
+            childAspectRatio: 7 / 5.5,
             padding: EdgeInsets.only(bottom: 0.0),
             children: calendarBuilder(),
           ),
@@ -183,23 +198,7 @@ class _CalendarState extends State<Calendar> {
 
   List<Widget> calendarBuilder() {
     List<Widget> dayWidgets = [];
-    List<DateTime>? calendarDays =
-        isExpanded ? selectedMonthsDays : selectedWeeksDays?.toList();
-
-    // DateUtils.DateUtils.weekdays.forEach(
-    //   (day) {
-    //     dayWidgets.add(
-    //       CalendarTile(
-    //         selectedColor: widget.selectedColor,
-    //         eventColor: widget.eventColor,
-    //         eventDoneColor: widget.eventDoneColor,
-    //         events: widget.events![day],
-    //         isDayOfWeek: true,
-    //         dayOfWeek: day,
-    //       ),
-    //     );
-    //   },
-    // );
+    List<DateTime>? calendarDays = isExpanded ? selectedMonthsDays : selectedWeeksDays?.toList();
 
     bool monthStarted = false;
     bool monthEnded = false;
@@ -228,6 +227,7 @@ class _CalendarState extends State<Calendar> {
               eventDoneColor: widget.eventDoneColor,
               events: widget.events![day],
               child: this.widget.dayBuilder!(context, day),
+              daySubtitleTextBuilder: this.widget.daySubtitleTextBuilder,
               date: day,
               onDateSelected: () => handleSelectedDateAndUserCallback(day),
             ),
@@ -241,6 +241,8 @@ class _CalendarState extends State<Calendar> {
                 events: widget.events![day],
                 onDateSelected: () => handleSelectedDateAndUserCallback(day),
                 date: day,
+                daySubtitleTextBuilder: this.widget.daySubtitleTextBuilder,
+                circleShapeSelection: this.widget.circleShapeSelection,
                 dateStyles: configureDateStyle(monthStarted, monthEnded),
                 isSelected: DateUtils.DateUtils.isSameDay(selectedDate, day),
                 inMonth: day.month == selectedDate.month),
