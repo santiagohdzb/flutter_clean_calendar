@@ -5,11 +5,13 @@ import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 class CalendarScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _CalendarScreenState();
+    return _CalendarScreenState(DateTime.now());
   }
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  _CalendarScreenState(this._selectedDay);
+
   void _handleNewDate(date) {
     setState(() {
       _selectedDay = date;
@@ -19,9 +21,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   List<EventDto> _selectedEvents = [];
-  DateTime? _selectedDay;
+  DateTime _selectedDay;
 
-final Map<DateTime, List<EventDto>> _events = {
+  final Map<DateTime, List<EventDto>> _events = {
+    DateTime(2026, 1, 1): [
+      EventDto() ..name = 'Event A' .. isDone = true,
+    ],
+
     DateTime(2026, 2, 1): [
       EventDto() ..name = 'Event A' .. isDone = true,
     ],
@@ -111,6 +117,35 @@ final Map<DateTime, List<EventDto>> _events = {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: Text('Calendar'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            tooltip: 'Add transaction',
+            onPressed: () { },
+          ),
+
+          IconButton(
+            icon: const Icon(Icons.today),
+            tooltip: 'Jump to today',
+            onPressed: () { },
+          ),
+
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == "PickDate") {
+                _selectDate(context);
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'PickDate',
+                  child: Text('Pick a date')
+                )
+              ];
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -119,6 +154,7 @@ final Map<DateTime, List<EventDto>> _events = {
             Container(
               child: Calendar(
                   events: _events,
+                  initialDate: _selectedDay,
                   onRangeSelected: (range) =>
                       print("Range is ${range.from}, ${range.to}"),
                   onDateSelected: (date) => _handleNewDate(date),
@@ -163,6 +199,22 @@ final Map<DateTime, List<EventDto>> _events = {
         itemCount: _selectedEvents!.length,
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDay,
+      firstDate: DateTime(2000), // Earliest date allowed
+      lastDate: DateTime(2100),  // Latest date allowed
+    );
+
+    // If the user didn't cancel and picked a new date
+    if (picked != null && picked != _selectedDay) {
+      setState(() {
+        _selectedDay = picked;
+      });
+    }
   }
 }
 

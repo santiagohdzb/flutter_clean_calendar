@@ -6,7 +6,7 @@ import './simple_gesture_detector.dart';
 import './calendar_tile.dart';
 import 'event_dto.dart';
 
-typedef DayBuilder= Widget Function(BuildContext context, DateTime day);
+typedef DayBuilder = Widget Function(BuildContext context, DateTime day);
 typedef DaySubtitleTextBuilder = DaySubtitleDetail Function(BuildContext context, DateTime day);
 
 class DaySubtitleDetail {
@@ -44,11 +44,11 @@ class Calendar extends StatefulWidget {
     this.onMonthChanged,
     this.onDateSelected,
     this.onRangeSelected,
-    this.isExpandable: false,
+    this.isExpandable = false,
     this.events,
     this.dayBuilder,
-    this.showTodayIcon: true,
-    this.showArrows: true,
+    this.showTodayIcon = true,
+    this.showArrows = true,
     this.selectedColor,
     this.eventColor,
     this.eventDoneColor,
@@ -88,6 +88,28 @@ class _CalendarState extends State<Calendar> {
             .sublist(0, 7);
             
     displayMonth = DateUtils.DateUtils.formatMonth(_selectedDate);
+  }
+
+  @override
+  void didUpdateWidget(Calendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.initialDate != oldWidget.initialDate && widget.initialDate != null) {
+      setState(() {
+        _selectedDate = widget.initialDate!;
+
+        var firstDayOfCurrentWeek = DateUtils.DateUtils.firstDayOfWeek(_selectedDate);
+        var lastDayOfCurrentWeek = DateUtils.DateUtils.lastDayOfWeek(_selectedDate);
+
+        selectedWeeksDays =
+            DateUtils.DateUtils.daysInRange(firstDayOfCurrentWeek, lastDayOfCurrentWeek)
+                .toList()
+                .sublist(0, 7);
+
+        displayMonth = DateUtils.DateUtils.formatMonth(_selectedDate);
+        selectedMonthsDays = DateUtils.DateUtils.daysInMonth(_selectedDate);
+      });
+    }
   }
 
   Widget get nameAndIconRow {
